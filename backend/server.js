@@ -42,6 +42,7 @@ app.use('/api/groups', groupRoutes);
 app.use('/api/registrations', registrationRoutes);
 app.use('/api/fees', feeRoutes);
 app.use('/api/approvals', approvalRoutes);
+<<<<<<< HEAD
 // app.get('/', (req, res) => {
 //     res.sendFile(path.join(__dirname, '../frontend/home.html'));
 // });
@@ -52,6 +53,14 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 
 // Serve static files from auth directory
 //app.use('/auth', express.static(path.join(__dirname, '../auth')));
+=======
+
+// Serve static files from frontend directory
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// Serve static files from auth directory
+app.use('/auth', express.static(path.join(__dirname, '../auth')));
+>>>>>>> frontend3
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -61,13 +70,22 @@ app.get('/api/health', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
+<<<<<<< HEAD
     res.status(500).json({
         success: false,
+=======
+    res.status(500).json({ 
+        success: false, 
+>>>>>>> frontend3
         message: 'Something went wrong!',
         error: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
 });
 
 app.listen(PORT, () => {
+<<<<<<< HEAD
     console.log(`Server is running at http://localhost:${PORT}`);
+=======
+    console.log(`Server is running on port ${PORT}`);
+>>>>>>> frontend3
 });

@@ -5,8 +5,13 @@ async function hasSocietyRole(userId) {
     const [roles] = await db.query(
         `SELECT 1 FROM user_roles ur
         INNER JOIN roles r ON ur.role_id = r.id
+<<<<<<< HEAD
         WHERE ur.user_id = ?
         AND (r.role_category IN ('committee', 'system') OR r.role_name LIKE '%Society%' OR r.role_name LIKE '%Admin%')
+=======
+        WHERE ur.user_id = ? 
+        AND (r.role_category IN ('committee', 'system') OR r.role_name LIKE '%Society%' OR r.role_name LIKE '%Admin%') 
+>>>>>>> frontend3
         AND ur.is_active = TRUE
         LIMIT 1`,
         [userId]
@@ -14,7 +19,11 @@ async function hasSocietyRole(userId) {
     return roles.length > 0;
 }
 
+<<<<<<< HEAD
 // Helper to check i f user is creator
+=======
+// Helper to check if user is creator
+>>>>>>> frontend3
 async function isCreator(userId, registrationId) {
     const [rows] = await db.query('SELECT created_by FROM registrations WHERE id = ?', [registrationId]);
     return rows.length > 0 && rows[0].created_by === userId;
@@ -173,7 +182,11 @@ exports.registerFree = async (req, res) => {
 
         const [reg] = await db.query('SELECT type, status, deadline FROM registrations WHERE id = ?', [id]);
         if (reg.length === 0) return res.status(404).json({ success: false, message: 'Registration not found' });
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> frontend3
         const now = new Date();
         const deadline = reg[0].deadline ? new Date(reg[0].deadline) : null;
         if (reg[0].status !== 'active' || (deadline && deadline < now)) {
@@ -230,10 +243,17 @@ exports.deleteRegistration = async (req, res) => {
         // Delete related records
         await db.query('DELETE FROM registration_participants WHERE registration_id = ?', [id]);
         await db.query('DELETE FROM payment_transactions WHERE related_type = "registration" AND related_id = ?', [id]);
+<<<<<<< HEAD
 
         // Delete registration
         await db.query('DELETE FROM registrations WHERE id = ?', [id]);
 
+=======
+        
+        // Delete registration
+        await db.query('DELETE FROM registrations WHERE id = ?', [id]);
+        
+>>>>>>> frontend3
         res.json({ success: true, message: 'Registration deleted successfully' });
     } catch (error) {
         console.error('Error deleting registration:', error);
@@ -256,7 +276,11 @@ exports.getParticipants = async (req, res) => {
         let participants;
         if (reg[0].type === 'free') {
             [participants] = await db.query(`
+<<<<<<< HEAD
                 SELECT u.name, u.username, u.email, rp.registered_at
+=======
+                SELECT u.name, u.username, u.email, rp.registered_at 
+>>>>>>> frontend3
                 FROM registration_participants rp
                 JOIN users u ON rp.user_id = u.id
                 WHERE rp.registration_id = ?

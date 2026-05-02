@@ -662,6 +662,7 @@ exports.getCommitteeMembers = async (req, res) => {
         res.status(500).json({ success: false, message: 'Error fetching committee members', error: error.message });
     }
 };
+<<<<<<< HEAD
 
 // Get batch options (all users + society members) for meeting room creation
 exports.getBatchOptions = async (req, res) => {
@@ -695,3 +696,5 @@ exports.getBatchOptions = async (req, res) => {
         res.status(500).json({ success: false, message: 'Error fetching batch options', error: error.message });
     }
 };
+=======
+>>>>>>> frontend3

@@ -6,10 +6,17 @@ exports.getNotifications = async (req, res) => {
         const userId = req.user.userId;
         const { page = 1, limit = 20, unread_only = false } = req.query;
         const offset = (page - 1) * limit;
+<<<<<<< HEAD
 
         let query = `
             SELECT n.*,
                    u.username as actor_username,
+=======
+        
+        let query = `
+            SELECT n.*, 
+                   u.username as actor_username, 
+>>>>>>> frontend3
                    u.name as actor_name,
                    p.name as post_name
             FROM notifications n
@@ -18,6 +25,7 @@ exports.getNotifications = async (req, res) => {
             WHERE n.user_id = ?
         `;
         const params = [userId];
+<<<<<<< HEAD
 
         if (unread_only === 'true') {
             query += ' AND n.is_read = FALSE';
@@ -28,12 +36,28 @@ exports.getNotifications = async (req, res) => {
 
         const [notifications] = await db.query(query, params);
 
+=======
+        
+        if (unread_only === 'true') {
+            query += ' AND n.is_read = FALSE';
+        }
+        
+        query += ' ORDER BY n.created_at DESC LIMIT ? OFFSET ?';
+        params.push(parseInt(limit), parseInt(offset));
+        
+        const [notifications] = await db.query(query, params);
+        
+>>>>>>> frontend3
         // Get unread count
         const [unreadResult] = await db.query(
             'SELECT COUNT(*) as unread_count FROM notifications WHERE user_id = ? AND is_read = FALSE',
             [userId]
         );
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> frontend3
         res.json({
             success: true,
             data: notifications,
@@ -58,7 +82,11 @@ exports.markAsRead = async (req, res) => {
     try {
         const userId = req.user.userId;
         const { notification_ids } = req.body; // Array of notification IDs or 'all'
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> frontend3
         if (notification_ids === 'all') {
             // Mark all notifications as read
             await db.query(
@@ -80,7 +108,11 @@ exports.markAsRead = async (req, res) => {
                 message: 'notification_ids must be an array or "all"'
             });
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> frontend3
         res.json({
             success: true,
             message: 'Notifications marked as read'
@@ -101,11 +133,19 @@ exports.createNotification = async (recipientId, type, title, message, postId, a
         if (recipientId === actorUserId) {
             return;
         }
+<<<<<<< HEAD
 
         const finalCommentId = entityType === 'comment' ? entityId : null;
 
         await db.query(
             `INSERT INTO notifications (user_id, actor_user_id, type, title, message, post_id, comment_id, entity_type, entity_id, is_read)
+=======
+        
+        const finalCommentId = entityType === 'comment' ? entityId : null;
+        
+        await db.query(
+            `INSERT INTO notifications (user_id, actor_user_id, type, title, message, post_id, comment_id, entity_type, entity_id, is_read) 
+>>>>>>> frontend3
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [recipientId, actorUserId, type, title, message, postId, finalCommentId, entityType, entityId, false]
         );
@@ -123,6 +163,7 @@ exports.createLikeNotification = async (postId, actorUserId) => {
             'SELECT p.name, p.user_id, u.name as owner_name FROM posts p JOIN users u ON p.user_id = u.id WHERE p.id = ?',
             [postId]
         );
+<<<<<<< HEAD
 
         if (posts.length === 0) return;
 
@@ -134,6 +175,19 @@ exports.createLikeNotification = async (postId, actorUserId) => {
 
         const actorName = actors[0].name;
 
+=======
+        
+        if (posts.length === 0) return;
+        
+        const post = posts[0];
+        
+        // Get actor details
+        const [actors] = await db.query('SELECT name FROM users WHERE id = ?', [actorUserId]);
+        if (actors.length === 0) return;
+        
+        const actorName = actors[0].name;
+        
+>>>>>>> frontend3
         await exports.createNotification(
             post.user_id,
             'like',
@@ -157,6 +211,7 @@ exports.createCommentNotification = async (postId, commentId, actorUserId) => {
             'SELECT p.name, p.user_id, u.name as owner_name FROM posts p JOIN users u ON p.user_id = u.id WHERE p.id = ?',
             [postId]
         );
+<<<<<<< HEAD
 
         if (posts.length === 0) return;
 
@@ -168,6 +223,19 @@ exports.createCommentNotification = async (postId, commentId, actorUserId) => {
 
         const actorName = actors[0].name;
 
+=======
+        
+        if (posts.length === 0) return;
+        
+        const post = posts[0];
+        
+        // Get actor details
+        const [actors] = await db.query('SELECT name FROM users WHERE id = ?', [actorUserId]);
+        if (actors.length === 0) return;
+        
+        const actorName = actors[0].name;
+        
+>>>>>>> frontend3
         await exports.createNotification(
             post.user_id,
             'comment',
@@ -191,17 +259,29 @@ exports.createOrganizationPostNotification = async (postId, actorUserId) => {
             'SELECT p.name, p.organization, u.name as creator_name FROM posts p JOIN users u ON p.user_id = u.id WHERE p.id = ?',
             [postId]
         );
+<<<<<<< HEAD
 
         if (posts.length === 0 || !posts[0].organization) return;
 
         const post = posts[0];
 
+=======
+        
+        if (posts.length === 0 || !posts[0].organization) return;
+        
+        const post = posts[0];
+        
+>>>>>>> frontend3
         // Get all users in the same organization (excluding the creator)
         const [orgUsers] = await db.query(
             'SELECT id FROM users WHERE organization = ? AND id != ?',
             [post.organization, actorUserId]
         );
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> frontend3
         // Create notifications for all organization members
         for (const user of orgUsers) {
             await exports.createNotification(
@@ -225,22 +305,36 @@ exports.deleteNotification = async (req, res) => {
     try {
         const userId = req.user.userId;
         const { notificationId } = req.params;
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> frontend3
         // Verify notification belongs to user
         const [notifications] = await db.query(
             'SELECT id FROM notifications WHERE id = ? AND user_id = ?',
             [notificationId, userId]
         );
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> frontend3
         if (notifications.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Notification not found'
             });
         }
+<<<<<<< HEAD
 
         await db.query('DELETE FROM notifications WHERE id = ?', [notificationId]);
 
+=======
+        
+        await db.query('DELETE FROM notifications WHERE id = ?', [notificationId]);
+        
+>>>>>>> frontend3
         res.json({
             success: true,
             message: 'Notification deleted'
@@ -259,12 +353,20 @@ exports.deleteNotification = async (req, res) => {
 exports.getUnreadCount = async (req, res) => {
     try {
         const userId = req.user.userId;
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> frontend3
         const [result] = await db.query(
             'SELECT COUNT(*) as unread_count FROM notifications WHERE user_id = ? AND is_read = FALSE',
             [userId]
         );
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> frontend3
         res.json({
             success: true,
             unread_count: result[0].unread_count
@@ -277,4 +379,8 @@ exports.getUnreadCount = async (req, res) => {
             error: error.message
         });
     }
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> frontend3

@@ -6,9 +6,12 @@ const { verifyToken } = require('../middleware/auth');
 // Get all users for member selection
 router.get('/users', verifyToken, groupController.getAllUsers);
 
+<<<<<<< HEAD
 // Get batch options (all users + society members) for meeting room creation
 router.get('/batch-options', verifyToken, groupController.getBatchOptions);
 
+=======
+>>>>>>> frontend3
 // Get users by role for batch selection
 router.get('/users/role/:role', verifyToken, groupController.getUsersByRole);
 
