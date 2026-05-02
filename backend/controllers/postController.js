@@ -849,31 +849,18 @@ exports.createPost = async (req, res) => {
                 console.error('Error creating committee notifications:', error);
             }
         }
-<<<<<<< HEAD
 
         res.status(201).json({
             success: true,
-=======
-        
-        res.status(201).json({ 
-            success: true, 
->>>>>>> frontend3
             message: 'Post created successfully',
             data: { postId: result.insertId }
         });
     } catch (error) {
         console.error('Error creating post:', error);
-<<<<<<< HEAD
         res.status(500).json({
             success: false,
             message: 'Error creating post',
             error: error.message
-=======
-        res.status(500).json({ 
-            success: false, 
-            message: 'Error creating post',
-            error: error.message 
->>>>>>> frontend3
         });
     }
 };
@@ -883,7 +870,6 @@ exports.updatePost = async (req, res) => {
     try {
         const { postId } = req.params;
         const updates = req.body;
-<<<<<<< HEAD
 
         const postsTable = await getPostsTableName();
 
@@ -893,17 +879,6 @@ exports.updatePost = async (req, res) => {
             return res.status(404).json({
                 success: false,
                 message: 'Post not found'
-=======
-        
-        const postsTable = await getPostsTableName();
-        
-        // Check if post exists
-        const [posts] = await db.query(`SELECT id, user_id FROM ${postsTable} WHERE id = ?`, [postId]);
-        if (posts.length === 0) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Post not found' 
->>>>>>> frontend3
             });
         }
 
@@ -915,7 +890,6 @@ exports.updatePost = async (req, res) => {
                 message: 'Forbidden. You are not the owner of this post.'
             });
         }
-<<<<<<< HEAD
 
         // Validate privacy if provided
         if (updates.privacy && !['public', 'private', 'committee'].includes(updates.privacy)) {
@@ -948,47 +922,12 @@ exports.updatePost = async (req, res) => {
         const updateFields = [];
         const updateValues = [];
 
-=======
-        
-        // Validate privacy if provided
-        if (updates.privacy && !['public', 'private', 'committee'].includes(updates.privacy)) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Privacy must be public, private, or committee' 
-            });
-        }
-        
-        // Validate post_type if provided
-        if (updates.post_type && !['post', 'achievement', 'announcement', 'blog', 'issue', 'event'].includes(updates.post_type)) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Invalid post type' 
-            });
-        }
-        
-        // Fields that can be updated
-        const allowedFields = [
-            'name', 
-            'description', 
-            'link',
-            'registration_link',
-            'event_end_time',
-            'post_type', 
-            'tags', 
-            'privacy'
-        ];
-        
-        const updateFields = [];
-        const updateValues = [];
-        
->>>>>>> frontend3
         for (const field of allowedFields) {
             if (updates[field] !== undefined) {
                 updateFields.push(`${field} = ?`);
                 updateValues.push(updates[field]);
             }
         }
-<<<<<<< HEAD
 
         if (updateFields.length === 0) {
             return res.status(400).json({
@@ -999,23 +938,10 @@ exports.updatePost = async (req, res) => {
 
         updateValues.push(postId);
 
-=======
-        
-        if (updateFields.length === 0) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'No valid fields to update' 
-            });
-        }
-        
-        updateValues.push(postId);
-        
->>>>>>> frontend3
         await db.query(
             `UPDATE ${postsTable} SET ${updateFields.join(', ')} WHERE id = ?`,
             updateValues
         );
-<<<<<<< HEAD
 
         res.json({
             success: true,
@@ -1027,19 +953,6 @@ exports.updatePost = async (req, res) => {
             success: false,
             message: 'Error updating post',
             error: error.message
-=======
-        
-        res.json({ 
-            success: true, 
-            message: 'Post updated successfully' 
-        });
-    } catch (error) {
-        console.error('Error updating post:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Error updating post',
-            error: error.message 
->>>>>>> frontend3
         });
     }
 };
@@ -1048,7 +961,6 @@ exports.updatePost = async (req, res) => {
 exports.deletePost = async (req, res) => {
     try {
         const { postId } = req.params;
-<<<<<<< HEAD
 
         const postsTable = await getPostsTableName();
         const totalPostsCol = await getUserTotalPostsCol();
@@ -1059,18 +971,6 @@ exports.deletePost = async (req, res) => {
             return res.status(404).json({
                 success: false,
                 message: 'Post not found'
-=======
-        
-        const postsTable = await getPostsTableName();
-        const totalPostsCol = await getUserTotalPostsCol();
-        
-        // Check if post exists and get user_id
-        const [posts] = await db.query(`SELECT user_id FROM ${postsTable} WHERE id = ?`, [postId]);
-        if (posts.length === 0) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Post not found' 
->>>>>>> frontend3
             });
         }
         const userId = posts[0].user_id;
@@ -1083,23 +983,15 @@ exports.deletePost = async (req, res) => {
                 message: 'Forbidden. You are not the owner of this post.'
             });
         }
-<<<<<<< HEAD
 
         // Delete post
         await db.query(`DELETE FROM ${postsTable} WHERE id = ?`, [postId]);
 
-=======
-        
-        // Delete post
-        await db.query(`DELETE FROM ${postsTable} WHERE id = ?`, [postId]);
-        
->>>>>>> frontend3
         // Update user's total posts count
         await db.query(
             `UPDATE users SET ${totalPostsCol} = GREATEST(${totalPostsCol} - 1, 0) WHERE id = ?`,
             [userId]
         );
-<<<<<<< HEAD
 
         res.json({
             success: true,
@@ -1111,19 +1003,6 @@ exports.deletePost = async (req, res) => {
             success: false,
             message: 'Error deleting post',
             error: error.message
-=======
-        
-        res.json({ 
-            success: true, 
-            message: 'Post deleted successfully' 
-        });
-    } catch (error) {
-        console.error('Error deleting post:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Error deleting post',
-            error: error.message 
->>>>>>> frontend3
         });
     }
 };
@@ -1133,7 +1012,6 @@ exports.toggleLike = async (req, res) => {
     try {
         const { postId } = req.params;
         const userId = req.user.userId; // Get from JWT
-<<<<<<< HEAD
 
         const postsTable = await getPostsTableName();
         const likesInfo = await getPostLikesFkCol();
@@ -1144,18 +1022,6 @@ exports.toggleLike = async (req, res) => {
             return res.status(404).json({
                 success: false,
                 message: 'Post not found'
-=======
-        
-        const postsTable = await getPostsTableName();
-        const likesInfo = await getPostLikesFkCol();
-        
-        // Check if post exists and access allowed
-        const [posts] = await db.query(`SELECT id, user_id, privacy FROM ${postsTable} WHERE id = ?`, [postId]);
-        if (posts.length === 0) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Post not found' 
->>>>>>> frontend3
             });
         }
         const post = posts[0];
@@ -1172,21 +1038,11 @@ exports.toggleLike = async (req, res) => {
                 return res.status(403).json({ success: false, message: 'Forbidden' });
             }
         }
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> frontend3
         // Check if already liked
         const [existingLikes] = await db.query(
             `SELECT id FROM ${likesInfo.table} WHERE ${likesInfo.col} = ? AND user_id = ?`,
             [postId, userId]
         );
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> frontend3
         let liked;
         if (existingLikes.length > 0) {
             // Unlike
@@ -1210,7 +1066,6 @@ exports.toggleLike = async (req, res) => {
                 [postId]
             );
             liked = true;
-<<<<<<< HEAD
 
 
             // Create like notification
@@ -1224,27 +1079,11 @@ exports.toggleLike = async (req, res) => {
             }
         }
 
-=======
-            
-            // Create like notification
-            try {
-                await notificationController.createLikeNotification(postId, userId);
-            } catch (error) {
-                console.error('Error creating like notification:', error);
-            }
-        }
-        
->>>>>>> frontend3
         // Get updated like count
         const [updatedPost] = await db.query(
             `SELECT likes_count FROM ${postsTable} WHERE id = ?`,
             [postId]
         );
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> frontend3
         res.json({
             success: true,
             message: liked ? 'Post liked' : 'Post unliked',
@@ -1255,17 +1094,10 @@ exports.toggleLike = async (req, res) => {
         });
     } catch (error) {
         console.error('Error toggling like:', error);
-<<<<<<< HEAD
         res.status(500).json({
             success: false,
             message: 'Error updating like status',
             error: error.message
-=======
-        res.status(500).json({ 
-            success: false, 
-            message: 'Error updating like status',
-            error: error.message 
->>>>>>> frontend3
         });
     }
 };
@@ -1277,7 +1109,6 @@ exports.getComments = async (req, res) => {
         const { page = 1, limit = 20 } = req.query;
         const offset = (page - 1) * limit;
         const viewerId = req.user?.userId || null;
-<<<<<<< HEAD
 
         const postsTable = await getPostsTableName();
         const commentsPostCol = await getCommentsPostCol();
@@ -1288,18 +1119,6 @@ exports.getComments = async (req, res) => {
             return res.status(404).json({
                 success: false,
                 message: 'Post not found'
-=======
-        
-        const postsTable = await getPostsTableName();
-        const commentsPostCol = await getCommentsPostCol();
-        
-        // Check if post exists and enforce privacy
-        const [posts] = await db.query(`SELECT id, user_id, privacy FROM ${postsTable} WHERE id = ?`, [postId]);
-        if (posts.length === 0) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Post not found' 
->>>>>>> frontend3
             });
         }
         const post = posts[0];
@@ -1320,16 +1139,10 @@ exports.getComments = async (req, res) => {
                 return res.status(403).json({ success: false, message: 'Forbidden' });
             }
         }
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> frontend3
         let query = `
             SELECT c.*, u.username, u.name as user_name,
                    ${viewerId ? `(SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id AND cl.user_id = ?) as user_liked_comment,` : ''}
                    (SELECT COUNT(*) FROM comments replies WHERE replies.parent_comment_id = c.id) as replies_count
-<<<<<<< HEAD
             FROM comments c
             JOIN users u ON c.user_id = u.id
             WHERE c.${commentsPostCol} = ? AND c.parent_comment_id IS NULL
@@ -1340,18 +1153,6 @@ exports.getComments = async (req, res) => {
 
         const [comments] = await db.query(query, params);
 
-=======
-            FROM comments c 
-            JOIN users u ON c.user_id = u.id 
-            WHERE c.${commentsPostCol} = ? AND c.parent_comment_id IS NULL
-            ORDER BY c.created_at DESC 
-            LIMIT ? OFFSET ?
-        `;
-        const params = viewerId ? [viewerId, postId, parseInt(limit), parseInt(offset)] : [postId, parseInt(limit), parseInt(offset)];
-        
-        const [comments] = await db.query(query, params);
-        
->>>>>>> frontend3
         res.json({
             success: true,
             data: comments,
@@ -1362,17 +1163,10 @@ exports.getComments = async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching comments:', error);
-<<<<<<< HEAD
         res.status(500).json({
             success: false,
             message: 'Error fetching comments',
             error: error.message
-=======
-        res.status(500).json({ 
-            success: false, 
-            message: 'Error fetching comments',
-            error: error.message 
->>>>>>> frontend3
         });
     }
 };
@@ -1383,18 +1177,12 @@ exports.addComment = async (req, res) => {
         const { postId } = req.params;
         const { content, parentCommentId = null } = req.body;
         const userId = req.user.userId; // Get from JWT
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> frontend3
         if (!content || content.trim() === '') {
             return res.status(400).json({
                 success: false,
                 message: 'Content is required'
             });
         }
-<<<<<<< HEAD
 
         const postsTable = await getPostsTableName();
         const commentsPostCol = await getCommentsPostCol();
@@ -1405,18 +1193,6 @@ exports.addComment = async (req, res) => {
             return res.status(404).json({
                 success: false,
                 message: 'Post not found'
-=======
-        
-        const postsTable = await getPostsTableName();
-        const commentsPostCol = await getCommentsPostCol();
-        
-        // Check if post exists and access allowed
-        const [posts] = await db.query(`SELECT id, user_id, privacy FROM ${postsTable} WHERE id = ?`, [postId]);
-        if (posts.length === 0) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Post not found' 
->>>>>>> frontend3
             });
         }
         const post = posts[0];
@@ -1433,11 +1209,6 @@ exports.addComment = async (req, res) => {
                 return res.status(403).json({ success: false, message: 'Forbidden' });
             }
         }
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> frontend3
         // If parent comment ID is provided, check if it exists
         if (parentCommentId) {
             const [parentComments] = await db.query(
@@ -1445,7 +1216,6 @@ exports.addComment = async (req, res) => {
                 [parentCommentId, postId]
             );
             if (parentComments.length === 0) {
-<<<<<<< HEAD
                 return res.status(404).json({
                     success: false,
                     message: 'Parent comment not found'
@@ -1453,25 +1223,11 @@ exports.addComment = async (req, res) => {
             }
         }
 
-=======
-                return res.status(404).json({ 
-                    success: false, 
-                    message: 'Parent comment not found' 
-                });
-            }
-        }
-        
->>>>>>> frontend3
         // Insert comment
         const [result] = await db.query(
             `INSERT INTO comments (${commentsPostCol}, user_id, content, parent_comment_id) VALUES (?, ?, ?, ?)`,
             [postId, userId, content.trim(), parentCommentId]
         );
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> frontend3
         // Update post comments count (only for top-level comments)
         if (!parentCommentId) {
             await db.query(
@@ -1479,39 +1235,21 @@ exports.addComment = async (req, res) => {
                 [postId]
             );
         }
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> frontend3
         // Create comment notification
         try {
             await notificationController.createCommentNotification(postId, result.insertId, userId);
         } catch (error) {
             console.error('Error creating comment notification:', error);
         }
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> frontend3
         // Get the created comment with user info
         const [newComment] = await db.query(`
             SELECT c.*, u.username, u.name as user_name,
                    0 as user_liked_comment, 0 as likes_count, 0 as replies_count
-<<<<<<< HEAD
             FROM comments c
             JOIN users u ON c.user_id = u.id
             WHERE c.id = ?
         `, [result.insertId]);
 
-=======
-            FROM comments c 
-            JOIN users u ON c.user_id = u.id 
-            WHERE c.id = ?
-        `, [result.insertId]);
-        
->>>>>>> frontend3
         res.status(201).json({
             success: true,
             message: 'Comment added successfully',
@@ -1519,17 +1257,10 @@ exports.addComment = async (req, res) => {
         });
     } catch (error) {
         console.error('Error adding comment:', error);
-<<<<<<< HEAD
         res.status(500).json({
             success: false,
             message: 'Error adding comment',
             error: error.message
-=======
-        res.status(500).json({ 
-            success: false, 
-            message: 'Error adding comment',
-            error: error.message 
->>>>>>> frontend3
         });
     }
 };
@@ -1539,7 +1270,6 @@ exports.toggleCommentLike = async (req, res) => {
     try {
         const { commentId } = req.params;
         const userId = req.user.userId; // Get from JWT
-<<<<<<< HEAD
 
         // Check if comment exists
         const [comments] = await db.query('SELECT id FROM comments WHERE id = ?', [commentId]);
@@ -1559,37 +1289,11 @@ exports.toggleCommentLike = async (req, res) => {
             });
         }
 
-=======
-        
-        // Check if comment exists
-        const [comments] = await db.query('SELECT id FROM comments WHERE id = ?', [commentId]);
-        if (comments.length === 0) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Comment not found' 
-            });
-        }
-        
-        // Check if user exists
-        const [users] = await db.query('SELECT id FROM users WHERE id = ?', [userId]);
-        if (users.length === 0) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'User not found' 
-            });
-        }
-        
->>>>>>> frontend3
         // Check if already liked
         const [existingLikes] = await db.query(
             'SELECT id FROM comment_likes WHERE comment_id = ? AND user_id = ?',
             [commentId, userId]
         );
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> frontend3
         let liked;
         if (existingLikes.length > 0) {
             // Unlike
@@ -1614,21 +1318,11 @@ exports.toggleCommentLike = async (req, res) => {
             );
             liked = true;
         }
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> frontend3
         // Get updated like count
         const [updatedComment] = await db.query(
             'SELECT likes_count FROM comments WHERE id = ?',
             [commentId]
         );
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> frontend3
         res.json({
             success: true,
             message: liked ? 'Comment liked' : 'Comment unliked',
@@ -1639,17 +1333,10 @@ exports.toggleCommentLike = async (req, res) => {
         });
     } catch (error) {
         console.error('Error toggling comment like:', error);
-<<<<<<< HEAD
         res.status(500).json({
             success: false,
             message: 'Error updating comment like status',
             error: error.message
-=======
-        res.status(500).json({ 
-            success: false, 
-            message: 'Error updating comment like status',
-            error: error.message 
->>>>>>> frontend3
         });
     }
 };
@@ -1661,7 +1348,6 @@ exports.getCommentReplies = async (req, res) => {
         const { page = 1, limit = 10 } = req.query;
         const offset = (page - 1) * limit;
         const viewerId = req.user?.userId || null;
-<<<<<<< HEAD
 
         const postsTable = await getPostsTableName();
         const commentsPostCol = await getCommentsPostCol();
@@ -1672,18 +1358,6 @@ exports.getCommentReplies = async (req, res) => {
             return res.status(404).json({
                 success: false,
                 message: 'Comment not found'
-=======
-        
-        const postsTable = await getPostsTableName();
-        const commentsPostCol = await getCommentsPostCol();
-        
-        // Check if comment exists and enforce parent post privacy
-        const [comments] = await db.query(`SELECT id, ${commentsPostCol} as post_id FROM comments WHERE id = ?`, [commentId]);
-        if (comments.length === 0) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Comment not found' 
->>>>>>> frontend3
             });
         }
         const postId = comments[0].post_id;
@@ -1709,7 +1383,6 @@ exports.getCommentReplies = async (req, res) => {
                 return res.status(403).json({ success: false, message: 'Forbidden' });
             }
         }
-<<<<<<< HEAD
 
         let query = `
             SELECT c.*, u.username, u.name as user_name
@@ -1724,22 +1397,6 @@ exports.getCommentReplies = async (req, res) => {
 
         const [replies] = await db.query(query, params);
 
-=======
-        
-        let query = `
-            SELECT c.*, u.username, u.name as user_name
-                   ${viewerId ? `, (SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id AND cl.user_id = ?) as user_liked_comment` : ''}
-            FROM comments c 
-            JOIN users u ON c.user_id = u.id 
-            WHERE c.parent_comment_id = ?
-            ORDER BY c.created_at ASC 
-            LIMIT ? OFFSET ?
-        `;
-        const params = viewerId ? [viewerId, commentId, parseInt(limit), parseInt(offset)] : [commentId, parseInt(limit), parseInt(offset)];
-        
-        const [replies] = await db.query(query, params);
-        
->>>>>>> frontend3
         res.json({
             success: true,
             data: replies,
@@ -1750,17 +1407,10 @@ exports.getCommentReplies = async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching comment replies:', error);
-<<<<<<< HEAD
         res.status(500).json({
             success: false,
             message: 'Error fetching comment replies',
             error: error.message
-=======
-        res.status(500).json({ 
-            success: false, 
-            message: 'Error fetching comment replies',
-            error: error.message 
->>>>>>> frontend3
         });
     }
 };
@@ -1770,7 +1420,6 @@ exports.getOrganizations = async (req, res) => {
     try {
         // Get unique organizations from users table
         const [organizations] = await db.query(`
-<<<<<<< HEAD
             SELECT DISTINCT organization
             FROM users
             WHERE organization IS NOT NULL
@@ -1781,18 +1430,6 @@ exports.getOrganizations = async (req, res) => {
         // Extract organization names into array
         const orgList = organizations.map(row => row.organization);
 
-=======
-            SELECT DISTINCT organization 
-            FROM users 
-            WHERE organization IS NOT NULL 
-            AND organization != ''
-            ORDER BY organization ASC
-        `);
-        
-        // Extract organization names into array
-        const orgList = organizations.map(row => row.organization);
-        
->>>>>>> frontend3
         res.json({
             success: true,
             data: orgList
@@ -1811,7 +1448,6 @@ exports.getOrganizations = async (req, res) => {
 exports.getTags = async (req, res) => {
     try {
         const postsTable = await getPostsTableName();
-<<<<<<< HEAD
 
         const [posts] = await db.query(`
             SELECT DISTINCT p.tags
@@ -1820,16 +1456,6 @@ exports.getTags = async (req, res) => {
             AND p.tags != ''
         `);
 
-=======
-        
-        const [posts] = await db.query(`
-            SELECT DISTINCT p.tags 
-            FROM ${postsTable} p 
-            WHERE p.tags IS NOT NULL 
-            AND p.tags != ''
-        `);
-        
->>>>>>> frontend3
         // Extract individual tags from comma-separated strings
         const tagSet = new Set();
         posts.forEach(post => {
@@ -1838,17 +1464,10 @@ exports.getTags = async (req, res) => {
                 tags.forEach(tag => tagSet.add(tag));
             }
         });
-<<<<<<< HEAD
 
         // Convert set to array and sort
         const uniqueTags = Array.from(tagSet).sort();
 
-=======
-        
-        // Convert set to array and sort
-        const uniqueTags = Array.from(tagSet).sort();
-        
->>>>>>> frontend3
         res.json({
             success: true,
             data: uniqueTags
